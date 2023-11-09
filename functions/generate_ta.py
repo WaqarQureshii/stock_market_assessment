@@ -3,13 +3,18 @@ import pandas_ta as ta
 
 import generate_db
 
-def sp500_decorator(start_date):
-    def wrapper():
-        sp500 = generate_db.generate_sp500(start_date)
+#%%
+def sp500_decorator(func):
+    def wrapper(*args, **kwargs):
+        start_date = kwargs.pop('start_date', None)
+        if start_date is not None:
+            sp500 = generate_db.generate_sp500(start_date)
+            kwargs['sp500'] = sp500
+        return func(*args, **kwargs)
     return wrapper
 
 @sp500_decorator
-def sp500_rsi(start_date,
+def sp500_rsi(sp500,
               rsi_lt = 30,
               rsi_mt = 15,
               rsi_st = 5):
@@ -20,6 +25,7 @@ def sp500_rsi(start_date,
     return sp500
 
 sp500 = sp500_rsi("2008-01-01")
+print(sp500)
 
 # @sp500_decorator
 # def sp500_bbands(sp500, start_date,
